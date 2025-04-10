@@ -150,362 +150,370 @@ function App() {
   const renderClipboardItem = (item: ClipboardItem) => {
     if (item.type === 'image' && item.imageUrl) {
       return (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
+        <Card 
+          elevation={0}
+          sx={{ 
+            bgcolor: alpha(theme.palette.background.paper, 0.7),
+            backdropFilter: 'blur(10px)',
+            border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+            '&:hover': {
+              transform: 'translateY(-2px)',
+              boxShadow: `0 8px 24px ${alpha(theme.palette.primary.main, 0.1)}`,
+              borderColor: alpha(theme.palette.primary.main, 0.2)
+            }
+          }}
         >
-          <Box sx={{ width: '100%', p: 2 }}>
-            <Card 
-              elevation={0}
-              sx={{ 
-                bgcolor: alpha(theme.palette.background.paper, 0.7),
-                backdropFilter: 'blur(10px)',
-                border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
-                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                '&:hover': {
-                  transform: 'translateY(-2px)',
-                  boxShadow: `0 8px 24px ${alpha(theme.palette.primary.main, 0.1)}`,
-                  borderColor: alpha(theme.palette.primary.main, 0.2)
-                }
-              }}
-            >
-              <CardMedia
-                component="img"
-                image={item.imageUrl}
-                alt="Clipboard image"
-                sx={{ 
-                  height: 200,
-                  objectFit: 'contain',
-                  bgcolor: alpha(theme.palette.primary.main, 0.03),
-                  borderRadius: '4px 4px 0 0'
-                }}
-              />
-              <CardContent sx={{ 
-                py: 2, 
-                px: 3, 
-                display: 'flex', 
-                justifyContent: 'space-between', 
-                alignItems: 'center',
-                borderTop: `1px solid ${alpha(theme.palette.divider, 0.1)}`
-              }}>
-                <Typography variant="caption" color="text.secondary">
-                  {new Date(item.timestamp).toLocaleString()}
-                </Typography>
-                <Box sx={{ display: 'flex', gap: 1 }}>
-                  <Tooltip title={item.locked ? "Unlock" : "Lock"}>
-                    <IconButton 
-                      onClick={(e) => handleToggleLock(item.timestamp, e)}
-                      size="small"
-                      className="action-button"
-                      color={item.locked ? "primary" : "default"}
-                      sx={{ 
-                        opacity: { xs: 1, sm: 0 },
-                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                        '&:hover': {
-                          bgcolor: alpha(theme.palette.primary.main, 0.1)
-                        }
-                      }}
-                    >
-                      {item.locked ? <LockIcon fontSize="small" /> : <LockOpenIcon fontSize="small" />}
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title="Delete">
-                    <IconButton 
-                      onClick={(e) => handleDeleteItem(item.timestamp, e)}
-                      size="small"
-                      className="action-button"
-                      disabled={item.locked}
-                      sx={{ 
-                        opacity: { xs: 1, sm: 0 },
-                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                        '&:hover': {
-                          bgcolor: alpha(theme.palette.error.main, 0.1),
-                          color: theme.palette.error.main
-                        }
-                      }}
-                    >
-                      <DeleteIcon fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title="Copy to Clipboard">
-                    <IconButton 
-                      onClick={() => handleItemClick(item)}
-                      size="small"
-                      className="action-button"
-                      sx={{ 
-                        opacity: { xs: 1, sm: 0 },
-                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                        '&:hover': {
-                          bgcolor: alpha(theme.palette.primary.main, 0.1)
-                        }
-                      }}
-                    >
-                      <ContentCopyIcon fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
-                </Box>
-              </CardContent>
-            </Card>
-          </Box>
-        </motion.div>
+          <CardMedia
+            component="img"
+            image={item.imageUrl}
+            alt="Clipboard image"
+            sx={{ 
+              height: 120,
+              objectFit: 'contain',
+              bgcolor: alpha(theme.palette.primary.main, 0.03),
+              borderRadius: '4px 4px 0 0'
+            }}
+          />
+          <CardContent sx={{ 
+            py: 1, 
+            px: 1.5,
+            '&:last-child': { pb: 1 },
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'center',
+            borderTop: `1px solid ${alpha(theme.palette.divider, 0.1)}`
+          }}>
+            <Typography variant="caption" color="text.secondary" noWrap sx={{ maxWidth: '50%' }}>
+              {new Date(item.timestamp).toLocaleString()}
+            </Typography>
+            <Box sx={{ display: 'flex', gap: 0.5 }}>
+              <Tooltip title={item.locked ? "Unlock" : "Lock"}>
+                <IconButton 
+                  onClick={(e) => handleToggleLock(item.timestamp, e)}
+                  size="small"
+                  className="action-button"
+                  color={item.locked ? "primary" : "default"}
+                  sx={{ 
+                    padding: 0.5,
+                    opacity: { xs: 1, sm: 0 },
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                    '&:hover': {
+                      bgcolor: alpha(theme.palette.primary.main, 0.1)
+                    }
+                  }}
+                >
+                  {item.locked ? <LockIcon fontSize="small" /> : <LockOpenIcon fontSize="small" />}
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Delete">
+                <span>
+                  <IconButton 
+                    onClick={(e) => handleDeleteItem(item.timestamp, e)}
+                    size="small"
+                    className="action-button"
+                    disabled={item.locked}
+                    sx={{ 
+                      padding: 0.5,
+                      opacity: { xs: 1, sm: 0 },
+                      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                      '&:hover': {
+                        bgcolor: alpha(theme.palette.error.main, 0.1),
+                        color: theme.palette.error.main
+                      }
+                    }}
+                  >
+                    <DeleteIcon fontSize="small" />
+                  </IconButton>
+                </span>
+              </Tooltip>
+              <Tooltip title="Copy to Clipboard">
+                <IconButton 
+                  onClick={() => handleItemClick(item)}
+                  size="small"
+                  className="action-button"
+                  sx={{ 
+                    padding: 0.5,
+                    opacity: { xs: 1, sm: 0 },
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                    '&:hover': {
+                      bgcolor: alpha(theme.palette.primary.main, 0.1)
+                    }
+                  }}
+                >
+                  <ContentCopyIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            </Box>
+          </CardContent>
+        </Card>
       )
     }
     return (
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
+      <Card
+        elevation={0}
+        sx={{
+          bgcolor: alpha(theme.palette.background.paper, 0.7),
+          backdropFilter: 'blur(10px)',
+          border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          '&:hover': {
+            transform: 'translateY(-2px)',
+            boxShadow: `0 8px 24px ${alpha(theme.palette.primary.main, 0.1)}`,
+            borderColor: alpha(theme.palette.primary.main, 0.2)
+          }
+        }}
       >
-        <Box sx={{ width: '100%', p: 2 }}>
-          <Card
-            elevation={0}
-            sx={{
-              bgcolor: alpha(theme.palette.background.paper, 0.7),
-              backdropFilter: 'blur(10px)',
-              border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
-              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-              '&:hover': {
-                transform: 'translateY(-2px)',
-                boxShadow: `0 8px 24px ${alpha(theme.palette.primary.main, 0.1)}`,
-                borderColor: alpha(theme.palette.primary.main, 0.2)
-              }
-            }}
-          >
-            <CardContent sx={{ p: 3 }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-                <Typography 
-                  sx={{ 
-                    fontFamily: 'monospace',
-                    fontSize: '0.9rem',
-                    whiteSpace: 'pre-wrap',
-                    wordBreak: 'break-word',
-                    color: theme.palette.text.primary,
-                    flex: 1,
-                    mr: 2
-                  }}
-                >
-                  {item.content}
-                </Typography>
-                <Box sx={{ display: 'flex', gap: 1 }}>
-                  <Tooltip title={item.locked ? "Unlock" : "Lock"}>
-                    <IconButton 
-                      onClick={(e) => handleToggleLock(item.timestamp, e)}
-                      size="small"
-                      className="action-button"
-                      color={item.locked ? "primary" : "default"}
-                      sx={{ 
-                        opacity: { xs: 1, sm: 0 },
-                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                        '&:hover': {
-                          bgcolor: alpha(theme.palette.primary.main, 0.1)
-                        }
-                      }}
-                    >
-                      {item.locked ? <LockIcon fontSize="small" /> : <LockOpenIcon fontSize="small" />}
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title="Delete">
-                    <IconButton 
-                      onClick={(e) => handleDeleteItem(item.timestamp, e)}
-                      size="small"
-                      className="action-button"
-                      disabled={item.locked}
-                      sx={{ 
-                        opacity: { xs: 1, sm: 0 },
-                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                        '&:hover': {
-                          bgcolor: alpha(theme.palette.error.main, 0.1),
-                          color: theme.palette.error.main
-                        }
-                      }}
-                    >
-                      <DeleteIcon fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title="Copy to Clipboard">
-                    <IconButton 
-                      onClick={() => handleItemClick(item)}
-                      size="small"
-                      className="action-button"
-                      sx={{ 
-                        opacity: { xs: 1, sm: 0 },
-                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                        '&:hover': {
-                          bgcolor: alpha(theme.palette.primary.main, 0.1)
-                        }
-                      }}
-                    >
-                      <ContentCopyIcon fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
-                </Box>
-              </Box>
-              <Box sx={{ 
-                display: 'flex', 
-                justifyContent: 'flex-end',
-                pt: 1,
-                borderTop: `1px solid ${alpha(theme.palette.divider, 0.1)}`
-              }}>
-                <Typography variant="caption" color="text.secondary">
-                  {new Date(item.timestamp).toLocaleString()}
-                </Typography>
-              </Box>
-            </CardContent>
-          </Card>
-        </Box>
-      </motion.div>
-    )
-  }
-
-  return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <Box sx={{ 
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 4
-        }}>
-          <Box sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            mb: 2
-          }}>
+        <CardContent sx={{ py: 1, px: 1.5, '&:last-child': { pb: 1 } }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 1 }}>
             <Typography 
-              variant="h3" 
-              component="h1"
               sx={{ 
-                fontWeight: 600,
-                background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-                backgroundClip: 'text',
-                WebkitBackgroundClip: 'text',
-                color: 'transparent',
-                letterSpacing: '-0.02em'
+                fontFamily: 'monospace',
+                fontSize: '0.85rem',
+                whiteSpace: 'pre-wrap',
+                wordBreak: 'break-word',
+                color: theme.palette.text.primary,
+                flex: 1,
+                maxHeight: '100px',
+                overflow: 'hidden',
+                display: '-webkit-box',
+                WebkitLineClamp: 4,
+                WebkitBoxOrient: 'vertical',
               }}
             >
-              Kumbuka
+              {item.content}
             </Typography>
-            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-              <ToggleButtonGroup
-                value={viewMode}
-                exclusive
-                onChange={(e, newValue) => newValue && setViewMode(newValue)}
-                size="small"
-                sx={{
-                  '& .MuiToggleButton-root': {
-                    border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
-                    bgcolor: alpha(theme.palette.background.paper, 0.7),
-                    backdropFilter: 'blur(10px)',
-                    color: theme.palette.text.secondary,
-                    '&.Mui-selected': {
-                      bgcolor: alpha(theme.palette.primary.main, 0.1),
-                      color: theme.palette.primary.main,
-                      '&:hover': {
-                        bgcolor: alpha(theme.palette.primary.main, 0.2),
-                      }
-                    },
-                    '&:hover': {
-                      bgcolor: alpha(theme.palette.primary.main, 0.05),
-                    }
-                  }
-                }}
-              >
-                <ToggleButton value="all">
-                  All Items
-                </ToggleButton>
-                <ToggleButton value="locked">
-                  <LockIcon sx={{ mr: 0.5 }} fontSize="small" />
-                  Locked Only
-                </ToggleButton>
-              </ToggleButtonGroup>
-              <Tooltip title="Clear History">
+            <Box sx={{ display: 'flex', gap: 0.5, ml: 1 }}>
+              <Tooltip title={item.locked ? "Unlock" : "Lock"}>
                 <IconButton 
-                  onClick={handleClearHistory}
-                  color="error"
+                  onClick={(e) => handleToggleLock(item.timestamp, e)}
+                  size="small"
+                  className="action-button"
+                  color={item.locked ? "primary" : "default"}
                   sx={{ 
+                    padding: 0.5,
+                    opacity: { xs: 1, sm: 0 },
                     transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                     '&:hover': {
-                      transform: 'scale(1.1) rotate(90deg)',
-                      bgcolor: alpha(theme.palette.error.main, 0.1)
+                      bgcolor: alpha(theme.palette.primary.main, 0.1)
                     }
                   }}
                 >
-                  <DeleteIcon />
+                  {item.locked ? <LockIcon fontSize="small" /> : <LockOpenIcon fontSize="small" />}
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Delete">
+                <span>
+                  <IconButton 
+                    onClick={(e) => handleDeleteItem(item.timestamp, e)}
+                    size="small"
+                    className="action-button"
+                    disabled={item.locked}
+                    sx={{ 
+                      padding: 0.5,
+                      opacity: { xs: 1, sm: 0 },
+                      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                      '&:hover': {
+                        bgcolor: alpha(theme.palette.error.main, 0.1),
+                        color: theme.palette.error.main
+                      }
+                    }}
+                  >
+                    <DeleteIcon fontSize="small" />
+                  </IconButton>
+                </span>
+              </Tooltip>
+              <Tooltip title="Copy to Clipboard">
+                <IconButton 
+                  onClick={() => handleItemClick(item)}
+                  size="small"
+                  className="action-button"
+                  sx={{ 
+                    padding: 0.5,
+                    opacity: { xs: 1, sm: 0 },
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                    '&:hover': {
+                      bgcolor: alpha(theme.palette.primary.main, 0.1)
+                    }
+                  }}
+                >
+                  <ContentCopyIcon fontSize="small" />
                 </IconButton>
               </Tooltip>
             </Box>
           </Box>
+          <Box sx={{ 
+            display: 'flex', 
+            justifyContent: 'flex-end',
+            mt: 1,
+            pt: 1,
+            borderTop: `1px solid ${alpha(theme.palette.divider, 0.1)}`
+          }}>
+            <Typography variant="caption" color="text.secondary" noWrap>
+              {new Date(item.timestamp).toLocaleString()}
+            </Typography>
+          </Box>
+        </CardContent>
+      </Card>
+    )
+  }
 
-          <AnimatePresence>
-            {filteredHistory.length === 0 ? (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                <Paper 
-                  elevation={0}
-                  sx={{ 
-                    p: 4,
-                    borderRadius: 2,
-                    bgcolor: alpha(theme.palette.background.paper, 0.7),
-                    backdropFilter: 'blur(10px)',
-                    border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
-                    textAlign: 'center'
-                  }}
-                >
-                  <Typography 
-                    variant="h6" 
-                    color="text.secondary" 
-                    sx={{ mb: 1 }}
-                  >
-                    {viewMode === 'all' 
-                      ? 'No clipboard history yet'
-                      : 'No locked items'}
-                  </Typography>
-                  <Typography 
-                    variant="body2" 
-                    color="text.secondary"
-                  >
-                    {viewMode === 'all'
-                      ? 'Copy something to see it appear here'
-                      : 'Lock some items to see them here'}
-                  </Typography>
-                </Paper>
-              </motion.div>
-            ) : (
-              <List sx={{ p: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
-                {filteredHistory.map((item, index) => (
-                  <motion.div
-                    key={item.timestamp}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    transition={{ duration: 0.3, delay: index * 0.1 }}
-                  >
-                    <ListItem
-                      sx={{
-                        p: 0,
-                        '&:hover .action-button': {
-                          opacity: 1
-                        }
-                      }}
-                    >
-                      {renderClipboardItem(item)}
-                    </ListItem>
-                  </motion.div>
-                ))}
-              </List>
-            )}
-          </AnimatePresence>
+  return (
+    <Container 
+      maxWidth={false} 
+      disableGutters 
+      sx={{ 
+        height: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        bgcolor: alpha(theme.palette.background.default, 0.8),
+        backdropFilter: 'blur(10px)'
+      }}
+    >
+      <Box sx={{ 
+        p: 2,
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        borderBottom: `1px solid ${alpha(theme.palette.divider, 0.1)}`
+      }}>
+        <Typography 
+          variant="h6" 
+          component="h1"
+          sx={{ 
+            fontWeight: 600,
+            background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+            backgroundClip: 'text',
+            WebkitBackgroundClip: 'text',
+            color: 'transparent',
+            letterSpacing: '-0.02em'
+          }}
+        >
+          Kumbuka
+        </Typography>
+        <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+          <ToggleButtonGroup
+            value={viewMode}
+            exclusive
+            onChange={(e, newValue) => newValue && setViewMode(newValue)}
+            size="small"
+            sx={{
+              '& .MuiToggleButton-root': {
+                border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+                bgcolor: alpha(theme.palette.background.paper, 0.7),
+                backdropFilter: 'blur(10px)',
+                color: theme.palette.text.secondary,
+                py: 0.5,
+                '&.Mui-selected': {
+                  bgcolor: alpha(theme.palette.primary.main, 0.1),
+                  color: theme.palette.primary.main,
+                  '&:hover': {
+                    bgcolor: alpha(theme.palette.primary.main, 0.2),
+                  }
+                },
+                '&:hover': {
+                  bgcolor: alpha(theme.palette.primary.main, 0.05),
+                }
+              }
+            }}
+          >
+            <ToggleButton value="all" size="small">
+              All
+            </ToggleButton>
+            <ToggleButton value="locked" size="small">
+              <LockIcon sx={{ fontSize: '1rem' }} />
+            </ToggleButton>
+          </ToggleButtonGroup>
+          <Tooltip title="Clear History">
+            <IconButton 
+              onClick={handleClearHistory}
+              color="error"
+              size="small"
+              sx={{ 
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                '&:hover': {
+                  transform: 'scale(1.1) rotate(90deg)',
+                  bgcolor: alpha(theme.palette.error.main, 0.1)
+                }
+              }}
+            >
+              <DeleteIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
         </Box>
-      </motion.div>
+      </Box>
+
+      <Box sx={{ 
+        flex: 1, 
+        overflowY: 'auto',
+        '&::-webkit-scrollbar': {
+          width: '8px',
+        },
+        '&::-webkit-scrollbar-track': {
+          background: 'transparent',
+        },
+        '&::-webkit-scrollbar-thumb': {
+          background: alpha(theme.palette.primary.main, 0.2),
+          borderRadius: '4px',
+          '&:hover': {
+            background: alpha(theme.palette.primary.main, 0.3),
+          }
+        }
+      }}>
+        <AnimatePresence>
+          {filteredHistory.length === 0 ? (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Box sx={{ p: 3, textAlign: 'center' }}>
+                <Typography 
+                  variant="body1" 
+                  color="text.secondary" 
+                  sx={{ mb: 1 }}
+                >
+                  {viewMode === 'all' 
+                    ? 'No clipboard history yet'
+                    : 'No locked items'}
+                </Typography>
+                <Typography 
+                  variant="body2" 
+                  color="text.secondary"
+                >
+                  {viewMode === 'all'
+                    ? 'Copy something to see it appear here'
+                    : 'Lock some items to see them here'}
+                </Typography>
+              </Box>
+            </motion.div>
+          ) : (
+            <List sx={{ py: 1 }}>
+              {filteredHistory.map((item, index) => (
+                <motion.div
+                  key={item.timestamp}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.3, delay: index * 0.1 }}
+                >
+                  <ListItem
+                    sx={{
+                      p: 1,
+                      '&:hover .action-button': {
+                        opacity: 1
+                      }
+                    }}
+                  >
+                    {renderClipboardItem(item)}
+                  </ListItem>
+                </motion.div>
+              ))}
+            </List>
+          )}
+        </AnimatePresence>
+      </Box>
 
       <Snackbar
         open={showCopied}
