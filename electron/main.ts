@@ -209,18 +209,70 @@ ipcMain.handle('get-clipboard-history', () => {
 })
 
 ipcMain.handle('clear-clipboard-history', () => {
-  // Clear the stored history
-  store.set('clipboardHistory', [])
+  // Get current history
+  const history = store.get('clipboardHistory', []) as Array<{
+    type: 'text' | 'image'
+    content: string
+    timestamp: string
+    imageUrl?: string
+    hash?: string
+    locked?: boolean
+  }>
+
+  // Keep locked items
+  const lockedItems = history.filter(item => item.locked)
+  const itemsToDelete = history.filter(item => !item.locked)
   
-  // Delete all saved images
+  // Delete unlocked images
   if (fs.existsSync(imagesDir)) {
-    fs.readdirSync(imagesDir).forEach(file => {
-      try {
-        fs.unlinkSync(path.join(imagesDir, file))
-      } catch (error) {
-        console.error(`Error deleting file ${file}:`, error)
+    itemsToDelete.forEach(item => {
+      if (item.type === 'image') {
+        try {
+          fs.unlinkSync(path.join(imagesDir, item.content))
+        } catch (error) {
+          console.error(`Error deleting file ${item.content}:`, error)
+        }
       }
     })
+  }
+
+  // Update history to only contain locked items
+  store.set('clipboardHistory', lockedItems)
+})
+
+ipcMain.handle('toggle-lock-item', async (_event, timestamp: string) => {
+  try {
+    // Get current history
+    const history = store.get('clipboardHistory', []) as Array<{
+      type: 'text' | 'image'
+      content: string
+      timestamp: string
+      imageUrl?: string
+      hash?: string
+      locked?: boolean
+    }>
+
+    // Find the item to toggle
+    const itemIndex = history.findIndex(item => item.timestamp === timestamp)
+    if (itemIndex === -1) {
+      throw new Error('Item not found')
+    }
+
+    // Toggle the locked state
+    const updatedHistory = [...history]
+    updatedHistory[itemIndex] = {
+      ...updatedHistory[itemIndex],
+      locked: !updatedHistory[itemIndex].locked
+    }
+
+    // Store the updated history
+    store.set('clipboardHistory', updatedHistory)
+
+    // Return the updated item
+    return updatedHistory[itemIndex]
+  } catch (error) {
+    console.error('Error toggling item lock:', error)
+    throw error
   }
 })
 
@@ -246,4 +298,38 @@ ipcMain.handle('set-clipboard-content', (_event, item: { type: string; content: 
     }
   }
   return true
+})
+
+ipcMain.handle('delete-clipboard-item', async (_event, timestamp: string) => {
+  try {
+    // Get current history
+    const history = store.get('clipboardHistory', []) as Array<{
+      type: 'text' | 'image'
+      content: string
+      timestamp: string
+      imageUrl?: string
+      hash?: string
+    }>
+
+    // Find the item to delete
+    const itemToDelete = history.find(item => item.timestamp === timestamp)
+    if (!itemToDelete) {
+      throw new Error('Item not found')
+    }
+
+    // If it's an image, delete the file
+    if (itemToDelete.type === 'image') {
+      const imagePath = path.join(imagesDir, itemToDelete.content)
+      if (fs.existsSync(imagePath)) {
+        fs.unlinkSync(imagePath)
+      }
+    }
+
+    // Remove the item from history
+    const updatedHistory = history.filter(item => item.timestamp !== timestamp)
+    store.set('clipboardHistory', updatedHistory)
+  } catch (error) {
+    console.error('Error deleting clipboard item:', error)
+    throw error
+  }
 }) 
