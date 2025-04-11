@@ -16,6 +16,23 @@ import LockIcon from '@mui/icons-material/Lock'
 import LockOpenIcon from '@mui/icons-material/LockOpen'
 import { ImageModal } from './ImageModal'
 
+// Helper function to format timestamp
+const formatTimestamp = (timestamp: string) => {
+  const date = new Date(timestamp)
+  const today = new Date()
+  
+  // Check if the date is today
+  const isToday = date.toDateString() === today.toDateString()
+  
+  if (isToday) {
+    return `Today, ${date.toLocaleTimeString()}`
+  }
+  
+  // Get day of week and format date
+  const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'long' })
+  return `${dayOfWeek}, ${date.toLocaleString()}`
+}
+
 interface ClipboardItemProps {
   item: {
     type: 'text' | 'image'
@@ -141,7 +158,7 @@ export const ClipboardItem: React.FC<ClipboardItemProps> = ({
           <CardContent sx={{ py: 1, px: 1.5, '&:last-child': { pb: 1 } }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 1 }}>
               <Typography variant="caption" color="text.secondary" noWrap>
-                {new Date(item.timestamp).toLocaleString()}
+                {formatTimestamp(item.timestamp)}
               </Typography>
               <ActionButtons />
             </Box>
@@ -193,7 +210,7 @@ export const ClipboardItem: React.FC<ClipboardItemProps> = ({
         </Typography>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 1 }}>
           <Typography variant="caption" color="text.secondary" noWrap>
-            {new Date(item.timestamp).toLocaleString()}
+            {formatTimestamp(item.timestamp)}
           </Typography>
           <ActionButtons />
         </Box>
