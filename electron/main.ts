@@ -312,7 +312,7 @@ app.on('ready', () => {
         lastClipboardContent = textContent
       }
 
-      setTimeout(checkClipboard, 500)
+      setTimeout(checkClipboard, 1500)
     }
 
     checkClipboard()
