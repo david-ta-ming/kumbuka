@@ -37,10 +37,50 @@ let tray: Tray | null = null
 
 app.dock?.hide() // Hide dock icon immediately
 
+// Function to clean up orphaned image files
+function cleanupOrphanedImages() {
+  try {
+    const history = store.get('clipboardHistory', []) as Array<{
+      type: 'text' | 'image'
+      content: string
+      timestamp: string
+      imageUrl?: string
+      hash?: string
+      locked?: boolean
+    }>
+
+    // Get all image files in the directory
+    const imageFiles = fs.readdirSync(imagesDir)
+    
+    // Create a set of referenced image filenames from the history
+    const referencedImages = new Set(
+      history
+        .filter(item => item.type === 'image' && item.imageUrl)
+        .map(item => {
+          const url = item.imageUrl as string
+          return url.replace('clipboard-image://', '')
+        })
+    )
+
+    // Delete any files that aren't referenced in the history
+    imageFiles.forEach(file => {
+      if (!referencedImages.has(file)) {
+        console.log('Deleting orphaned image file:', file)
+        fs.unlinkSync(path.join(imagesDir, file))
+      }
+    })
+  } catch (error) {
+    console.error('Error cleaning up orphaned images:', error)
+  }
+}
+
 app.on('ready', () => {
   console.log('App ready event fired')
   
   try {
+    // Clean up orphaned images on startup
+    cleanupOrphanedImages()
+    
     // Register custom protocol
     protocol.registerFileProtocol('clipboard-image', (request, callback) => {
       const filePath = request.url.replace('clipboard-image://', '')
@@ -378,4 +418,9 @@ process.on('uncaughtException', (error) => {
 
 process.on('unhandledRejection', (reason, promise) => {
   console.error('Unhandled Rejection at:', promise, 'reason:', reason)
+})
+
+// Add cleanup on app quit
+app.on('before-quit', () => {
+  cleanupOrphanedImages()
 })
