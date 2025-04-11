@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, clipboard, nativeImage, protocol, Tray, screen, Menu, IconButton, ButtonBase, Tooltip } from 'electron'
+import { app, BrowserWindow, ipcMain, clipboard, nativeImage, protocol, Tray, screen, Menu } from 'electron'
 import path from 'path'
 import Store from 'electron-store'
 import fs from 'fs'
@@ -100,12 +100,12 @@ app.on('ready', () => {
 
     // Create window
     window = new BrowserWindow({
-      width: 400,
-      height: 600,
+      width: 800,
+      height: 800,
       show: false,
       frame: false,
       skipTaskbar: true,
-      x: primaryDisplay.bounds.x + Math.round(primaryDisplay.bounds.width / 2 - 200),
+      x: primaryDisplay.bounds.x + Math.round(primaryDisplay.bounds.width / 2 - 300),
       y: primaryDisplay.bounds.y + 24,
       webPreferences: {
         nodeIntegration: true,
@@ -355,11 +355,12 @@ ipcMain.handle('delete-clipboard-item', (_event, timestamp: string) => {
   store.set('clipboardHistory', updatedHistory)
 })
 
-ipcMain.handle('set-clipboard-content', (_event, item: { type: string; content: string }) => {
+ipcMain.handle('set-clipboard-content', (_event, item: { type: string; content: string; imageUrl?: string }) => {
   if (item.type === 'text') {
     clipboard.writeText(item.content)
-  } else if (item.type === 'image') {
-    const imagePath = path.join(imagesDir, item.content)
+  } else if (item.type === 'image' && item.imageUrl) {
+    const fileName = item.imageUrl.replace('clipboard-image://', '')
+    const imagePath = path.join(imagesDir, fileName)
     try {
       if (fs.existsSync(imagePath)) {
         const imageBuffer = fs.readFileSync(imagePath)
