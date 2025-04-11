@@ -5,6 +5,12 @@ import {
   Alert,
   useTheme,
   alpha,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  Typography
 } from '@mui/material'
 import { Header } from './components/Header'
 import { ClipboardList } from './components/ClipboardList'
@@ -37,6 +43,7 @@ function App() {
   const [showCopied, setShowCopied] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [viewMode, setViewMode] = useState<'all' | 'locked'>('all')
+  const [showClearDialog, setShowClearDialog] = useState(false)
 
   useEffect(() => {
     // Load initial history
@@ -66,14 +73,24 @@ function App() {
   }, [])
 
   const handleClearHistory = async () => {
+    setShowClearDialog(true)
+  }
+
+  const handleConfirmClear = async () => {
     try {
       await window.electronAPI.clearClipboardHistory()
       // Only remove unlocked items from the UI
       setHistory(prev => prev.filter(item => item.locked))
+      setShowClearDialog(false)
     } catch (error) {
       console.error('Error clearing history:', error)
       setErrorMessage('Failed to clear clipboard history')
+      setShowClearDialog(false)
     }
+  }
+
+  const handleCancelClear = () => {
+    setShowClearDialog(false)
   }
 
   const handleItemClick = async (item: ClipboardItem) => {
@@ -151,6 +168,39 @@ function App() {
         onDelete={handleDeleteItem}
         onToggleLock={handleToggleLock}
       />
+
+      <Dialog
+        open={showClearDialog}
+        onClose={handleCancelClear}
+        PaperProps={{
+          sx: {
+            bgcolor: alpha(theme.palette.background.paper, 0.9),
+            backdropFilter: 'blur(10px)',
+            borderRadius: 2
+          }
+        }}
+      >
+        <DialogTitle>
+          Clear Clipboard History
+        </DialogTitle>
+        <DialogContent>
+          <Typography>
+            Are you sure you want to clear all unlocked items from your clipboard history? This action cannot be undone.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancelClear} color="inherit">
+            Cancel
+          </Button>
+          <Button 
+            onClick={handleConfirmClear} 
+            color="error"
+            variant="contained"
+          >
+            Clear History
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <Snackbar
         open={showCopied}
