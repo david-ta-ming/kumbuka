@@ -1,6 +1,6 @@
 # Kumbuka - Clipboard History Manager
 
-Kumbuka is a powerful Electron-based clipboard history manager that helps you keep track of everything you copy. Built with React, TypeScript, and Material UI, it provides a seamless experience for managing your clipboard history.
+Kumbuka is a powerful Electron-based clipboard history manager that helps you keep track of everything you copy. The name "Kumbuka" comes from the Swahili word meaning "recall" or "remember". Built with React, TypeScript, and Material UI, it provides a seamless experience for managing your clipboard history.
 
 ## Features
 
